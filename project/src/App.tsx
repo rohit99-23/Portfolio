@@ -97,12 +97,29 @@ function App() {
         />
       </div>
 
-      {/* Floating Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-8 h-8 bg-cyan-400 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-6 h-6 bg-pink-400 rounded-full opacity-30 animate-bounce"></div>
-        <div className="absolute bottom-40 left-20 w-4 h-4 bg-violet-400 rounded-full opacity-25 animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-10 h-10 bg-blue-400 rounded-full opacity-20 animate-bounce"></div>
+      {/* Floating Tech Logos & Particles */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Floating Particles */}
+        <div className="absolute top-24 left-16 w-8 h-8 bg-cyan-400 rounded-full opacity-20 animate-pulse" />
+        <div className="absolute top-1/3 right-24 w-6 h-6 bg-pink-400 rounded-full opacity-30 animate-bounce" />
+        <div className="absolute bottom-1/4 left-1/4 w-4 h-4 bg-violet-400 rounded-full opacity-25 animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-10 h-10 bg-blue-400 rounded-full opacity-20 animate-bounce" />
+        {/* Docker Logo */}
+        <div className="absolute left-10 top-1/2 animate-float-slow">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="24" fill="#0db7ed"/><path d="M14 30c1.5 2.5 5.5 4 10 4 6.5 0 10-2.5 10-7v-1h-20v1c0 1.5.5 2.5 1.5 3z" fill="#fff"/><rect x="16" y="22" width="3" height="4" rx="1" fill="#fff"/><rect x="20" y="22" width="3" height="4" rx="1" fill="#fff"/><rect x="24" y="22" width="3" height="4" rx="1" fill="#fff"/><rect x="28" y="22" width="3" height="4" rx="1" fill="#fff"/></svg>
+        </div>
+        {/* Jenkins Logo */}
+        <div className="absolute right-16 top-1/4 animate-float-medium">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="24" fill="#d24939"/><circle cx="24" cy="24" r="14" fill="#fff"/><ellipse cx="24" cy="28" rx="8" ry="6" fill="#d24939"/><ellipse cx="24" cy="22" rx="5" ry="6" fill="#fff" stroke="#d24939" strokeWidth="2"/></svg>
+        </div>
+        {/* Kubernetes Logo */}
+        <div className="absolute left-1/3 bottom-16 animate-float-fast">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="24" fill="#326ce5"/><polygon points="24,12 34,24 24,36 14,24" fill="#fff"/></svg>
+        </div>
+        {/* Git Logo */}
+        <div className="absolute right-1/3 bottom-24 animate-float-slow">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="24" fill="#f34f29"/><circle cx="24" cy="24" r="10" fill="#fff"/><rect x="22" y="18" width="4" height="12" rx="2" fill="#f34f29"/><rect x="18" y="22" width="12" height="4" rx="2" fill="#f34f29"/></svg>
+        </div>
       </div>
 
       {/* Navigation */}
