@@ -11,14 +11,32 @@ import {
   X,
   ArrowUp,
   Check,
-  Filter
+  Sun,
+  Moon,
+  FileText
 } from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import VanillaTilt from 'vanilla-tilt';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    return 'dark';
+  });
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,6 +49,15 @@ function App() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      once: true,
+      offset: 60,
+      easing: 'ease-in-out',
+    });
   }, []);
 
   const scrollToTop = () => {
@@ -50,7 +77,7 @@ function App() {
       description: "Streamlit UI app showing college mess menus",
       borderColor: "border-cyan-400",
       tags: ["Streamlit", "Python", "UI"],
-      category: "Python"
+      category: "Streamlit"
     },
     {
       title: "🐳 Flask-Docker App",
@@ -87,8 +114,43 @@ function App() {
     "Streamlit apps with UI + speech output"
   ];
 
+  // Custom hook for tilt effect
+  function useTilt(options: {
+    max: number;
+    speed: number;
+    glare: boolean;
+    'max-glare': number;
+    scale: number;
+  }) {
+    const ref = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      const currentRef = ref.current;
+      if (currentRef) {
+        VanillaTilt.init(currentRef, options);
+      }
+      return () => {
+        if (currentRef && (currentRef as unknown as { vanillaTilt?: { destroy: () => void } }).vanillaTilt) {
+          (currentRef as unknown as { vanillaTilt: { destroy: () => void } }).vanillaTilt.destroy();
+        }
+      };
+    }, [options]);
+    return ref;
+  }
+
+  // Create tilt options once
+  const tiltOptions = {
+    max: 18,
+    speed: 400,
+    glare: true,
+    'max-glare': 0.25,
+    scale: 1.04,
+  };
+
+  // Create a single tilt ref for the first project
+  const tiltRef = useTilt(tiltOptions);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 text-white relative overflow-x-hidden">
+    <div className={`min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 text-white relative overflow-x-hidden ${theme}`}>
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
         <div 
@@ -131,7 +193,7 @@ function App() {
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden md:flex space-x-8 items-center">
               {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
                 <a
                   key={item}
@@ -141,54 +203,80 @@ function App() {
                   {item}
                 </a>
               ))}
+              {/* Theme Toggle */}
+              <button
+                className="ml-6 p-2 rounded-full border border-cyan-400 bg-black/40 hover:bg-cyan-400 hover:text-black transition-colors duration-300 shadow-md"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-white"
+              className="md:hidden text-white p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all duration-300 hover:bg-cyan-400/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Open mobile menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
 
           {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden mt-4 space-y-4">
+          <div
+            className={`md:hidden transition-all duration-500 ease-in-out overflow-hidden ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+          >
+            <div className="mt-4 space-y-4 flex flex-col items-center">
               {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="block text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+                  className="block text-lg text-gray-300 hover:text-cyan-400 transition-colors duration-300 px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 glow-effect"
                   onClick={() => setIsMenuOpen(false)}
+                  tabIndex={isMenuOpen ? 0 : -1}
                 >
                   {item}
                 </a>
               ))}
+              {/* Theme Toggle for Mobile */}
+              <button
+                className="mt-2 p-2 rounded-full border border-cyan-400 bg-black/40 hover:bg-cyan-400 hover:text-black transition-colors duration-300 shadow-md"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Toggle theme"
+                tabIndex={isMenuOpen ? 0 : -1}
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center pt-20 px-6">
+      <section className="min-h-screen flex items-center justify-center pt-20 px-6" data-aos="fade-up">
         <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 text-center md:text-left">
             <div className="space-y-4">
               <p className="text-cyan-400 text-lg">Hello! I Am</p>
-              <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-pink-400 to-violet-400 bg-clip-text text-transparent">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-pink-400 to-violet-400 bg-clip-text text-transparent">
                 Rohit
               </h1>
-              <p className="text-2xl md:text-3xl text-gray-300">
-                🚀 DevOps Engineer | Final Year B.Tech CSE
+              <p className="text-xl sm:text-2xl md:text-3xl text-gray-300">
+                 DevOps Engineer | Final Year B.Tech CSE
               </p>
-              <p className="text-gray-400 text-lg max-w-2xl">
+              <p className="text-base sm:text-lg text-gray-400 max-w-2xl">
                 Automating the future of software delivery, one pipeline at a time.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]">
+              <button 
+                className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] glow-effect focus:outline-none focus:ring-4 focus:ring-cyan-400/50 min-h-[44px] touch-manipulation"
+                onClick={() => {
+                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 <span className="relative z-10 flex items-center gap-2">
                   📂 View Projects
                   <ExternalLink size={20} />
@@ -196,7 +284,10 @@ function App() {
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               
-              <button className="group px-8 py-4 border-2 border-cyan-400 rounded-lg font-semibold transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]">
+              <button 
+                className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-cyan-400 rounded-lg font-semibold transition-all duration-300 hover:bg-cyan-400 hover:text-black active:scale-95 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] glow-effect focus:outline-none focus:ring-4 focus:ring-cyan-400/50 min-h-[44px] touch-manipulation"
+                onClick={() => setIsResumeOpen(true)}
+              >
                 <span className="flex items-center gap-2">
                   <Download size={20} />
                   Download Resume
@@ -207,16 +298,35 @@ function App() {
 
           <div className="flex justify-center">
             <div className="relative">
+              {/* Pulsing waves behind avatar */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/40 to-pink-400/40 animate-pulse-wave"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 to-pink-400/30 animate-pulse-wave" style={{animationDelay: '0.3s'}}></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 to-pink-400/20 animate-pulse-wave" style={{animationDelay: '0.6s'}}></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/10 to-pink-400/10 animate-pulse-wave" style={{animationDelay: '0.9s'}}></div>
+              
               <div className="w-64 h-64 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 p-1 animate-pulse">
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
                   <div className="w-48 h-48 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-400/20 flex items-center justify-center text-6xl">
-                    👨‍💻
+                    {/* Avatar image placeholder for accessibility */}
+                    <img 
+                      src="/avatar-placeholder.png" 
+                      alt="Rohit Kumar avatar placeholder" 
+                      className="w-44 h-44 rounded-full object-cover border-4 border-cyan-400/60 shadow-lg" 
+                      aria-label="Rohit Kumar avatar"
+                    />
                   </div>
                 </div>
               </div>
               
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-400/50">
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-400/50 animate-bounce">
                 <span className="text-cyan-400 font-semibold">💻 DevOps Engineer</span>
+              </div>
+              
+              {/* Floating label below avatar */}
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 animate-float-slow">
+                <div className="bg-gradient-to-r from-cyan-400/20 to-pink-400/20 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-400/30">
+                  <span className="text-cyan-300 text-sm font-medium">✨ DevOps Engineer</span>
+                </div>
               </div>
             </div>
           </div>
@@ -231,10 +341,10 @@ function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-6">
+      <section id="about" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
-            🧠 About Me
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+             About Me
           </h2>
           
           <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
@@ -255,9 +365,9 @@ function App() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-6">
+      <section id="skills" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
             ⚒️ Skills & Tools
           </h2>
           
@@ -268,12 +378,9 @@ function App() {
                   {skillGroup.category}
                 </h3>
                 <div className="flex flex-wrap gap-3 justify-center">
-                  {skillGroup.items.map((skill, skillIndex) => (
-                    <span
-                      key={skillIndex}
-                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full text-sm font-medium border border-cyan-400/30 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 hover:scale-105 cursor-pointer"
-                    >
-                      {skill}
+                  {skillGroup.items.map((item) => (
+                    <span key={item} className="glow-pill">
+                      {item}
                     </span>
                   ))}
                 </div>
@@ -284,70 +391,70 @@ function App() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-6">
+      <section id="projects" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
-            🚀 Projects That Speak DevOps
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+             Projects That Speak DevOps
           </h2>
           
-          {/* Filter Buttons */}
+          {/* Project Filters */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {['All', 'CI/CD', 'Python', 'Streamlit'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 glow-effect hover:scale-105 touch-manipulation ${
                   activeFilter === filter
-                    ? 'bg-gradient-to-r from-cyan-500 to-pink-500 text-white shadow-[0_0_20px_rgba(34,211,238,0.5)]'
-                    : 'bg-black/30 text-gray-300 hover:text-cyan-400 hover:border-cyan-400/50'
-                } border border-white/10`}
+                    ? 'bg-gradient-to-r from-cyan-500 to-pink-500 text-white shadow-lg border-2 border-cyan-400'
+                    : 'bg-black/40 border-2 border-cyan-400/50 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400'
+                }`}
               >
-                <Filter size={16} className="inline mr-2" />
-                {filter}
+                {filter === 'All' ? '🔘 All' : filter === 'CI/CD' ? '🔧 CI/CD' : filter === 'Python' ? '🐍 Python' : '📊 Streamlit'}
               </button>
             ))}
           </div>
-
+          
           <div className="grid md:grid-cols-2 gap-8">
-            {filteredProjects.map((project, index) => (
-              <div
-                key={index}
-                className={`group relative bg-black/30 backdrop-blur-md rounded-2xl p-6 border-2 ${project.borderColor} hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] transition-all duration-300 hover:scale-105 cursor-pointer`}
-              >
-                <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-cyan-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-gray-300 mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag, tagIndex) => (
-                    <span
-                      key={tagIndex}
-                      className="px-3 py-1 bg-gradient-to-r from-cyan-400/20 to-pink-400/20 rounded-full text-sm text-cyan-400 border border-cyan-400/30"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-                
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button className="flex items-center gap-2 text-cyan-400 hover:text-pink-400 transition-colors">
+            {filteredProjects.map((project, idx) => {
+              return (
+                <div
+                  ref={idx === 0 ? tiltRef : undefined}
+                  key={project.title}
+                  className={`rounded-2xl p-8 border-4 ${project.borderColor} bg-black/30 backdrop-blur-md shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(236,72,153,0.3)] cursor-pointer relative group glow-effect`}
+                  data-aos="zoom-in-up"
+                  data-aos-delay={idx * 100}
+                >
+                  <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-cyan-400 transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-300 mb-4">{project.description}</p>
+                  
+                  {/* Tech Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 bg-cyan-400/20 border border-cyan-400/50 rounded-full text-xs font-medium text-cyan-300 hover:bg-cyan-400/40 hover:border-cyan-400 hover:text-white transition-all duration-300 hover:scale-105 cursor-pointer"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 py-2 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg text-white font-semibold hover:scale-105 active:scale-95 glow-effect focus:outline-none focus:ring-2 focus:ring-cyan-400/50 min-h-[36px] touch-manipulation">
                     🔍 View Details
-                    <ExternalLink size={16} />
                   </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* DevOps Tasks Section */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
             🔧 DevOps Tasks I've Done
           </h2>
           
@@ -368,47 +475,58 @@ function App() {
       </section>
 
       {/* Education Section */}
-      <section id="education" className="py-20 px-6">
+      <section id="education" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
             🎓 Education & Academics
           </h2>
-          
-          <div className="space-y-8">
-            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-4 h-4 bg-cyan-400 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-cyan-400">B.Tech (CSE) | 2022 – Present</h3>
+          <div className="relative pl-8 md:pl-16">
+            {/* Vertical timeline line */}
+            <div className="absolute left-4 md:left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-pink-400 to-violet-400 rounded-full opacity-60"></div>
+            {/* Timeline entries */}
+            <div className="space-y-12">
+              {/* B.Tech */}
+              <div className="relative flex items-start group">
+                <div className="absolute -left-6 md:-left-10 top-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 border-4 border-violet-950 shadow-lg group-hover:scale-110 transition-transform"></div>
+                </div>
+                <div className="bg-black/40 border border-cyan-400/40 rounded-xl p-6 shadow-lg w-full ml-4 md:ml-8">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-1">B.Tech (CSE) <span className="text-sm text-gray-400 font-normal">2022 – Present</span></h3>
+                  <p className="text-gray-200 font-semibold">Vivekananda Global University, Jaipur</p>
+                  <p className="text-pink-400 font-bold">CGPA: 8.0</p>
+                </div>
               </div>
-              <p className="text-gray-300 mb-2">🏫 Vivekananda Global University, Jaipur</p>
-              <p className="text-pink-400 font-semibold">📈 CGPA: 8.0</p>
-            </div>
-
-            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-4 h-4 bg-pink-400 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-pink-400">12th (CBSE) | 2020 – 2022</h3>
+              {/* 12th */}
+              <div className="relative flex items-start group">
+                <div className="absolute -left-6 md:-left-10 top-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 border-4 border-violet-950 shadow-lg group-hover:scale-110 transition-transform"></div>
+                </div>
+                <div className="bg-black/40 border border-cyan-400/40 rounded-xl p-6 shadow-lg w-full ml-4 md:ml-8">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-1">12th (CBSE) <span className="text-sm text-gray-400 font-normal">2020 – 2022</span></h3>
+                  <p className="text-gray-200 font-semibold">CMJ Institute of Education, Motihari (Bihar)</p>
+                  <p className="text-pink-400 font-bold">74.4%</p>
+                </div>
               </div>
-              <p className="text-gray-300 mb-2">🎒 CMJ Institute of Education, Motihari (Bihar)</p>
-              <p className="text-cyan-400 font-semibold">📈 74.4%</p>
-            </div>
-
-            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-4 h-4 bg-violet-400 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-violet-400">10th (CBSE) | 2019 – 2020</h3>
+              {/* 10th */}
+              <div className="relative flex items-start group">
+                <div className="absolute -left-6 md:-left-10 top-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 border-4 border-violet-950 shadow-lg group-hover:scale-110 transition-transform"></div>
+                </div>
+                <div className="bg-black/40 border border-cyan-400/40 rounded-xl p-6 shadow-lg w-full ml-4 md:ml-8">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-1">10th (CBSE) <span className="text-sm text-gray-400 font-normal">2019 – 2020</span></h3>
+                  <p className="text-gray-200 font-semibold">CMJ Institute of Education, Motihari (Bihar)</p>
+                  <p className="text-pink-400 font-bold">83%</p>
+                </div>
               </div>
-              <p className="text-gray-300 mb-2">🎒 CMJ Institute of Education, Motihari (Bihar)</p>
-              <p className="text-cyan-400 font-semibold">📈 83%</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Internship Section */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
             💼 Internship Experience
           </h2>
           
@@ -426,31 +544,69 @@ function App() {
       </section>
 
       {/* Resume Section */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
-            📄 Resume
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="inline-block align-middle mr-2"><FileText className="inline-block text-pink-400 animate-pulse drop-shadow-[0_0_8px_rgba(236,72,153,0.7)]" size={28} /></span>
+            Resume
           </h2>
-          
-          <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
-            <div className="text-6xl mb-6">📋</div>
-            <p className="text-gray-300 mb-8 text-lg">
-              Need a quick summary? Download my updated resume (PDF).
-            </p>
-            <button className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)]">
-              <span className="flex items-center gap-2">
-                <Download size={20} />
-                Download Resume
-              </span>
+          <p className="text-gray-300 mb-6">Need a quick summary? Download my updated resume (PDF).</p>
+          <div className="flex flex-col items-center gap-4">
+            <button
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold text-white shadow-lg hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 border-2 border-pink-400/60 glow-effect focus:outline-none focus:ring-4 focus:ring-pink-400/50 min-h-[44px] touch-manipulation"
+              onClick={() => setIsResumeOpen(true)}
+            >
+              <FileText className="inline-block mr-2 animate-pulse text-pink-400" size={24} />
+              Download Resume
             </button>
           </div>
         </div>
+        {/* Resume Modal */}
+        {isResumeOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 p-8 rounded-2xl border-2 border-cyan-400 shadow-2xl max-w-lg w-full relative animate-fade-in">
+              <button
+                className="absolute top-4 right-4 text-cyan-400 hover:text-pink-400 text-2xl"
+                onClick={() => setIsResumeOpen(false)}
+                aria-label="Close resume preview"
+              >
+                <X size={28} />
+              </button>
+              <div className="flex flex-col items-center gap-4">
+                <FileText className="text-pink-400 animate-pulse drop-shadow-[0_0_12px_rgba(236,72,153,0.7)]" size={48} />
+                <h3 className="text-2xl font-bold text-cyan-400 mb-2">Rohit Kumar - Resume</h3>
+                <div className="w-full h-48 bg-black/40 rounded-lg flex items-center justify-center border border-cyan-400/40 mb-4">
+                  {/* PDF preview placeholder using iframe */}
+                  <iframe 
+                    src="/resume.pdf" 
+                    title="Resume PDF Preview" 
+                    className="w-full h-full rounded-lg border-none" 
+                    aria-label="Resume PDF Preview"
+                  >
+                  </iframe>
+                  <span className="text-gray-400 sr-only">PDF preview will appear here when resume is uploaded.</span>
+                </div>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    alert('Resume download will be available soon! Please contact me for a copy.');
+                  }}
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold text-white shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 border-2 border-pink-400/60"
+                >
+                  <Download className="inline-block mr-2" size={20} />
+                  Download PDF
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-6">
+      <section id="contact" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
             📬 Let's Connect
           </h2>
           
@@ -522,43 +678,58 @@ function App() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/10">
         <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
-            "Keep shipping. Keep scaling." – Rohit, DevOps Engineer
-          </p>
-          <div className="flex justify-center gap-6">
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-cyan-400 mb-4">
+              <span className="relative inline-block">
+                "Keep shipping. Keep scaling."
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-pink-400 to-violet-400 animate-pulse shadow-lg"></span>
+              </span>
+            </h3>
+            <p className="text-gray-400">– Rohit Kumar, DevOps Engineer</p>
+          </div>
+          
+          <div className="flex justify-center space-x-6 mb-8">
             <a
-              href="https://github.com/rohit99-23"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+              href="mailto:rohitkumarpani246@gmail.com"
+              className="p-3 rounded-full bg-black/40 border-2 border-cyan-400/50 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 glow-effect hover:scale-110"
+              aria-label="Email"
             >
-              <Github size={24} />
+              <Mail size={24} />
             </a>
             <a
               href="https://linkedin.com/in/rohit-kumar-157014289"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+              className="p-3 rounded-full bg-black/40 border-2 border-cyan-400/50 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 glow-effect hover:scale-110"
+              aria-label="LinkedIn"
             >
               <Linkedin size={24} />
             </a>
             <a
-              href="mailto:rohitkumarpani246@gmail.com"
-              className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+              href="https://github.com/rohit99-23"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-black/40 border-2 border-cyan-400/50 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 glow-effect hover:scale-110"
+              aria-label="GitHub"
             >
-              <Mail size={24} />
+              <Github size={24} />
             </a>
+          </div>
+          
+          <div className="text-gray-500 text-sm">
+            <p>📍 Jaipur (Open to relocate)</p>
           </div>
         </div>
       </footer>
 
-      {/* Scroll to Top Button */}
+      {/* Floating Scroll-to-Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] z-30"
+          className="fixed bottom-8 right-8 z-50 p-4 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 text-white shadow-lg hover:scale-110 transition-all duration-300 animate-bounce focus:outline-none focus:ring-4 focus:ring-cyan-400/50 border-2 border-white/20"
+          aria-label="Scroll to top"
         >
-          <ArrowUp size={20} />
+          <ArrowUp size={28} />
         </button>
       )}
     </div>
