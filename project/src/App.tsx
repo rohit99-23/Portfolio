@@ -64,6 +64,20 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 80; // Account for fixed navbar
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const projects = [
     {
       title: "🗂️ Menu CLI Tool",
@@ -195,13 +209,13 @@ function App() {
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-8 items-center">
               {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
-                <a
+                <button
                   key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+                  onClick={() => scrollToSection(item.toLowerCase())}
+                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] bg-transparent border-none cursor-pointer font-medium"
                 >
                   {item}
-                </a>
+                </button>
               ))}
               {/* Theme Toggle */}
               <button
@@ -229,15 +243,17 @@ function App() {
           >
             <div className="mt-4 space-y-4 flex flex-col items-center">
               {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
-                <a
+                <button
                   key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="block text-lg text-gray-300 hover:text-cyan-400 transition-colors duration-300 px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 glow-effect"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    scrollToSection(item.toLowerCase());
+                    setIsMenuOpen(false);
+                  }}
+                  className="block text-lg text-gray-300 hover:text-cyan-400 transition-colors duration-300 px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 glow-effect bg-transparent border-none cursor-pointer font-medium w-full"
                   tabIndex={isMenuOpen ? 0 : -1}
                 >
                   {item}
-                </a>
+                </button>
               ))}
               {/* Theme Toggle for Mobile */}
               <button
@@ -273,9 +289,7 @@ function App() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <button 
                 className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] glow-effect focus:outline-none focus:ring-4 focus:ring-cyan-400/50 min-h-[44px] touch-manipulation"
-                onClick={() => {
-                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => scrollToSection('projects')}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   📂 View Projects
@@ -307,13 +321,23 @@ function App() {
               <div className="w-64 h-64 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 p-1 animate-pulse">
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
                   <div className="w-48 h-48 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-400/20 flex items-center justify-center text-6xl">
-                    {/* Avatar image placeholder for accessibility */}
+                    {/* Avatar image - replace with your actual profile picture */}
                     <img 
-                      src="/avatar-placeholder.png" 
-                      alt="Rohit Kumar avatar placeholder" 
+                      src="/rohit-avatar.jpg" 
+                      alt="Rohit Kumar - DevOps Engineer" 
                       className="w-44 h-44 rounded-full object-cover border-4 border-cyan-400/60 shadow-lg" 
                       aria-label="Rohit Kumar avatar"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling?.classList.remove('hidden');
+                      }}
                     />
+                    {/* Fallback initials */}
+                    <div className="hidden w-44 h-44 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 flex items-center justify-center text-4xl font-bold text-white border-4 border-cyan-400/60 shadow-lg">
+                      RK
+                    </div>
                   </div>
                 </div>
               </div>
