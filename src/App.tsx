@@ -307,7 +307,13 @@ function App() {
               <div className="w-64 h-64 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 p-1 animate-pulse">
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
                   <div className="w-48 h-48 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-400/20 flex items-center justify-center text-6xl">
-                  
+                    {/* Avatar image placeholder for accessibility */}
+                    <img 
+                      src="/avatar-placeholder.png" 
+                      alt="Rohit Kumar avatar placeholder" 
+                      className="w-44 h-44 rounded-full object-cover border-4 border-cyan-400/60 shadow-lg" 
+                      aria-label="Rohit Kumar avatar"
+                    />
                   </div>
                 </div>
               </div>
@@ -570,7 +576,15 @@ function App() {
                 <FileText className="text-pink-400 animate-pulse drop-shadow-[0_0_12px_rgba(236,72,153,0.7)]" size={48} />
                 <h3 className="text-2xl font-bold text-cyan-400 mb-2">Rohit Kumar - Resume</h3>
                 <div className="w-full h-48 bg-black/40 rounded-lg flex items-center justify-center border border-cyan-400/40 mb-4">
-                  <span className="text-gray-400">[PDF Preview Placeholder]</span>
+                  {/* PDF preview placeholder using iframe */}
+                  <iframe 
+                    src="/resume.pdf" 
+                    title="Resume PDF Preview" 
+                    className="w-full h-full rounded-lg border-none" 
+                    aria-label="Resume PDF Preview"
+                  >
+                  </iframe>
+                  <span className="text-gray-400 sr-only">PDF preview will appear here when resume is uploaded.</span>
                 </div>
                 <a
                   href="#"

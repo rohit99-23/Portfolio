@@ -1,5 +1,9 @@
 [build]
+<<<<<<< HEAD
   base = "project"
+=======
+  base = "."
+>>>>>>> 15eadd27408d84159728a9acb12c2600765737e6
   command = "npm run build"
   publish = "dist"
 
