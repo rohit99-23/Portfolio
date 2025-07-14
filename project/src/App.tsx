@@ -32,6 +32,10 @@ function App() {
   });
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  // Add state for avatar error
+  const [avatarError, setAvatarError] = useState(false);
+  // Add state for resume error
+  const [resumeError, setResumeError] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
@@ -200,8 +204,11 @@ function App() {
   // Create a single tilt ref for the first project
   const tiltRef = useTilt(tiltOptions);
 
+  // Detect reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 text-white relative overflow-x-hidden animate-gradient-move ${theme}`}>
+    <div className={`min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 text-white relative overflow-x-hidden animate-gradient-move ${theme} ${prefersReducedMotion ? 'motion-reduce' : ''}`}>
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
         <div 
@@ -340,6 +347,7 @@ function App() {
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
                   className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] bg-transparent border-none cursor-pointer font-medium"
+                  aria-label={`Go to ${item} section`}
                 >
                   {item}
                 </button>
@@ -349,6 +357,7 @@ function App() {
                 className="ml-6 p-2 rounded-full border border-cyan-400 bg-black/40 hover:bg-cyan-400 hover:text-black transition-colors duration-300 shadow-md"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 aria-label="Toggle theme"
+                tabIndex={0}
               >
                 {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
               </button>
@@ -359,6 +368,7 @@ function App() {
               className="md:hidden text-white p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all duration-300 hover:bg-cyan-400/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Open mobile menu"
+              tabIndex={0}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -378,6 +388,7 @@ function App() {
                   }}
                   className="block text-lg text-gray-300 hover:text-cyan-400 transition-colors duration-300 px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 glow-effect bg-transparent border-none cursor-pointer font-medium w-full"
                   tabIndex={isMenuOpen ? 0 : -1}
+                  aria-label={`Go to ${item} section`}
                 >
                   {item}
                 </button>
@@ -417,6 +428,8 @@ function App() {
               <button 
                 className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] glow-effect focus:outline-none focus:ring-4 focus:ring-cyan-400/50 min-h-[44px] touch-manipulation"
                 onClick={() => scrollToSection('projects')}
+                aria-label="View Projects"
+                tabIndex={0}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   📂 View Projects
@@ -428,6 +441,8 @@ function App() {
               <button 
                 className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-cyan-400 rounded-lg font-semibold transition-all duration-300 hover:bg-cyan-400 hover:text-black active:scale-95 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] glow-effect focus:outline-none focus:ring-4 focus:ring-cyan-400/50 min-h-[44px] touch-manipulation"
                 onClick={() => setIsResumeOpen(true)}
+                aria-label="Download Resume"
+                tabIndex={0}
               >
                 <span className="flex items-center gap-2">
                   <Download size={20} />
@@ -449,9 +464,18 @@ function App() {
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
                   <div className="w-48 h-48 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-400/20 flex items-center justify-center text-6xl">
                     {/* Simple profile picture with fallback */}
-                    <div className="w-44 h-44 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 flex items-center justify-center text-4xl font-bold text-white border-4 border-cyan-400/60 shadow-lg">
-                      RK
-                    </div>
+                    <img 
+                      src="/rohit-avatar.jpg" 
+                      alt="Rohit Avatar" 
+                      className="w-44 h-44 rounded-full object-cover border-4 border-cyan-400/60 shadow-lg"
+                      onError={() => setAvatarError(true)}
+                      style={{ display: avatarError ? 'none' : 'block' }}
+                    />
+                    {avatarError && (
+                      <div className="w-44 h-44 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 flex items-center justify-center text-4xl font-bold text-white border-4 border-cyan-400/60 shadow-lg">
+                        RK
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -596,8 +620,12 @@ function App() {
 
       {/* Project Detail Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 p-8 rounded-2xl border-2 border-cyan-400 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setSelectedProject(null)}
+        >
+          <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 p-8 rounded-2xl border-2 border-cyan-400 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-fade-in"
+            onClick={e => e.stopPropagation()}
+          >
             <button
               className="absolute top-4 right-4 text-cyan-400 hover:text-pink-400 text-2xl z-10"
               onClick={() => setSelectedProject(null)}
@@ -623,6 +651,7 @@ function App() {
                     className="w-full h-full rounded-lg border-none"
                     allowFullScreen
                   />
+                  {/* TODO: Replace placeholder demo video links with actual project demo URLs */}
                 </div>
               </div>
 
@@ -787,6 +816,8 @@ function App() {
             <button
               className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold text-white shadow-lg hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 border-2 border-pink-400/60 glow-effect focus:outline-none focus:ring-4 focus:ring-pink-400/50 min-h-[44px] touch-manipulation"
               onClick={() => setIsResumeOpen(true)}
+              aria-label="Download Resume"
+              tabIndex={0}
             >
               <FileText className="inline-block mr-2 animate-pulse text-pink-400" size={24} />
               Download Resume
@@ -814,14 +845,20 @@ function App() {
                     title="Resume PDF Preview" 
                     className="w-full h-full rounded-lg border-none" 
                     aria-label="Resume PDF Preview"
+                    onError={() => setResumeError(true)}
                   >
                   </iframe>
-                  <span className="text-gray-400 sr-only">PDF preview will appear here when resume is uploaded.</span>
+                  {resumeError && (
+                    <span className="text-red-400 font-semibold">Resume PDF not found. Please try again later.</span>
+                  )}
                 </div>
                 <a
                   href="/resume.pdf"
                   download="Rohit_Kumar_Resume.pdf"
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold text-white shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 border-2 border-pink-400/60"
+                  className={`px-6 py-3 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-lg font-semibold text-white shadow-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 border-2 border-pink-400/60${resumeError ? ' opacity-50 pointer-events-none' : ''}`}
+                  aria-disabled={resumeError}
+                  aria-label="Download Resume PDF"
+                  tabIndex={resumeError ? -1 : 0}
                 >
                   <Download className="inline-block mr-2" size={20} />
                   Download PDF
@@ -957,6 +994,7 @@ function App() {
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 z-50 p-4 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 text-white shadow-lg hover:scale-110 transition-all duration-300 animate-bounce focus:outline-none focus:ring-4 focus:ring-cyan-400/50 border-2 border-white/20"
           aria-label="Scroll to top"
+          tabIndex={0}
         >
           <ArrowUp size={28} />
         </button>
