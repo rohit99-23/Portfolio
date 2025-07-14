@@ -140,7 +140,7 @@ function App() {
       tags: ["Python", "Automation", "API"],
       category: "Python",
       demoVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual demo video
-      githubLink: "https://github.com/rohit99-23/mini-task-automation",
+      githubLink: "https://github.com/rohit99-23/mini-task-set.git",
       features: [
         "SMS automation via Twilio API",
         "Email automation with SMTP",
