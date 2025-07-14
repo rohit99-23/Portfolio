@@ -413,7 +413,7 @@ function App() {
           <div className="space-y-8 text-center md:text-left">
             <div className="space-y-4">
               <p className="text-cyan-400 text-lg">Hello! I Am</p>
-              <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-pink-400 to-violet-400 bg-clip-text text-transparent">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-300/80 via-pink-300/80 to-violet-300/80 bg-clip-text text-transparent">
                 Rohit
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl text-gray-300">
@@ -498,7 +498,7 @@ function App() {
       {/* About Section */}
       <section id="about" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
              About Me
           </h2>
           
@@ -522,7 +522,7 @@ function App() {
       {/* Skills Section */}
       <section id="skills" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             ⚒️ Skills & Tools
           </h2>
           
@@ -548,7 +548,7 @@ function App() {
       {/* Projects Section */}
       <section id="projects" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
              Projects That Speak DevOps
           </h2>
           
@@ -715,7 +715,7 @@ function App() {
       {/* DevOps Tasks Section */}
       <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             🔧 DevOps Tasks I've Done
           </h2>
           
@@ -738,7 +738,7 @@ function App() {
       {/* Education Section */}
       <section id="education" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             🎓 Education & Academics
           </h2>
           <div className="relative pl-8 md:pl-16">
@@ -787,12 +787,12 @@ function App() {
       {/* Internship Section */}
       <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             💼 Internship Experience
           </h2>
           
           <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
-            <h3 className="text-2xl font-bold text-cyan-400 mb-4">
+            <h3 className="text-2xl font-bold text-cyan-300 mb-4">
               Summer Internship at LinuxWorld Informatics Pvt. Ltd.
             </h3>
             <p className="text-gray-300 leading-relaxed">
@@ -807,7 +807,7 @@ function App() {
       {/* Resume Section */}
       <section className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             <span className="inline-block align-middle mr-2"><FileText className="inline-block text-pink-400 animate-pulse drop-shadow-[0_0_8px_rgba(236,72,153,0.7)]" size={28} /></span>
             Resume
           </h2>
@@ -872,7 +872,7 @@ function App() {
       {/* Contact Section */}
       <section id="contact" className="py-20 px-6" data-aos="fade-up">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 bg-gradient-to-r from-cyan-300/80 to-pink-300/80 bg-clip-text text-transparent">
             📬 Let's Connect
           </h2>
           
@@ -945,10 +945,10 @@ function App() {
       <footer className="py-12 px-6 border-t border-white/10">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="mb-8">
-            <h3 className="text-2xl font-bold text-cyan-400 mb-4">
+            <h3 className="text-2xl font-bold text-cyan-300 mb-4">
               <span className="relative inline-block">
                 "Keep shipping. Keep scaling."
-                <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-pink-400 to-violet-400 animate-pulse shadow-lg"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-300/80 via-pink-300/80 to-violet-300/80 animate-pulse shadow-lg"></span>
               </span>
             </h3>
             <p className="text-gray-400">– Rohit Kumar, DevOps Engineer</p>
