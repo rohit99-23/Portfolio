@@ -108,7 +108,7 @@ function App() {
       tags: ["Streamlit", "Python", "UI"],
       category: "Streamlit",
       demoVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual demo video
-      githubLink: "https://github.com/rohit99-23/mess-menu-tracker",
+      githubLink: "https://github.com/rohit99-23/mess.git",
       features: [
         "Real-time menu updates",
         "Nutritional information display",
@@ -124,7 +124,7 @@ function App() {
       tags: ["Docker", "Flask", "Jenkins"],
       category: "CI/CD",
       demoVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual demo video
-      githubLink: "https://github.com/rohit99-23/flask-docker-app",
+      githubLink: "https://github.com/rohit99-23/myapp123.git",
       features: [
         "Docker containerization",
         "Jenkins CI/CD pipeline",
