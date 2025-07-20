@@ -18,6 +18,65 @@ import {
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import VanillaTilt from 'vanilla-tilt';
+import axios from 'axios';
+
+function ChatWidget() {
+  const [open, setOpen] = React.useState(false);
+  const [input, setInput] = React.useState('');
+  const [messages, setMessages] = React.useState<{from: 'user'|'bot', text: string}[]>([]);
+  const [loading, setLoading] = React.useState(false);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    setMessages(msgs => [...msgs, {from: 'user', text: input}]);
+    setLoading(true);
+    try {
+      const res = await axios.post('/chat', { message: input });
+      setMessages(msgs => [...msgs, {from: 'bot', text: res.data.response}]);
+    } catch (e) {
+      setMessages(msgs => [...msgs, {from: 'bot', text: 'Sorry, there was an error.'}]);
+    }
+    setInput('');
+    setLoading(false);
+  };
+
+  return (
+    <div className="chat-widget-fab" style={{position: 'fixed', bottom: 24, right: 24, zIndex: 1000}}>
+      {open ? (
+        <div className="chat-widget-box">
+          <div className="chat-widget-header">
+            <span>Ask RohitBot</span>
+            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: 18, cursor: 'pointer' }}>×</button>
+          </div>
+          <div className="chat-widget-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={msg.from === 'user' ? 'chat-widget-message-user' : 'chat-widget-message-bot'}>
+                <span className={msg.from === 'user' ? 'chat-widget-bubble-user' : 'chat-widget-bubble-bot'}>{msg.text}</span>
+              </div>
+            ))}
+            {loading && <div style={{ color: '#22d3ee', fontSize: 12 }}>RohitBot is typing...</div>}
+          </div>
+          <div className="chat-widget-input-row">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
+              placeholder="Type your message..."
+              className="chat-widget-input"
+              disabled={loading}
+            />
+            <button onClick={sendMessage} disabled={loading || !input.trim()} className="chat-widget-send-btn">Send</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setOpen(true)} className="chat-widget-fab" title="Chat with RohitBot">
+          💬
+        </button>
+      )}
+    </div>
+  );
+}
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -999,6 +1058,7 @@ function App() {
           <ArrowUp size={28} />
         </button>
       )}
+      <ChatWidget />
     </div>
   );
 }
