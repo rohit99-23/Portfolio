@@ -43,7 +43,7 @@ function ChatWidget() {
   };
 
   return (
-    <div className="chat-widget-fab" style={{position: 'fixed', bottom: 24, right: 24, zIndex: 1000}}>
+    <div className="chat-widget-fab">
       {open ? (
         <div className="chat-widget-box">
           <div className="chat-widget-header">
