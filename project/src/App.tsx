@@ -20,6 +20,8 @@ import 'aos/dist/aos.css';
 import VanillaTilt from 'vanilla-tilt';
 import axios from 'axios';
 
+const CHAT_API_URL = 'https://rohitkumar-pp8o.onrender.com/chat';
+
 function ChatWidget() {
   const [open, setOpen] = React.useState(false);
   const [input, setInput] = React.useState('');
@@ -31,7 +33,7 @@ function ChatWidget() {
     setMessages(msgs => [...msgs, {from: 'user', text: input}]);
     setLoading(true);
     try {
-      const res = await axios.post('/chat', { message: input });
+      const res = await axios.post(CHAT_API_URL, { message: input });
       setMessages(msgs => [...msgs, {from: 'bot', text: res.data.response}]);
     } catch (e) {
       setMessages(msgs => [...msgs, {from: 'bot', text: 'Sorry, there was an error.'}]);
